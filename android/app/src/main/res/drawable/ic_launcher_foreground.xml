@@ -1,0 +1,12 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Grey track, then a yellow three-quarter countdown arc and a white hand -->
+    <path android:strokeColor="#FF34383F" android:strokeWidth="7"
+        android:pathData="M54,27 A27,27 0 1,1 53.99,27" />
+    <path android:strokeColor="#FFF2C230" android:strokeWidth="7" android:strokeLineCap="round"
+        android:pathData="M54,27 A27,27 0 1,1 27,54" />
+    <path android:strokeColor="#FFEEF0F2" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M54,54 L54,38" />
+    <path android:fillColor="#FFEEF0F2"
+        android:pathData="M54,50 a4,4 0 1,1 0,8 a4,4 0 1,1 0,-8z" />
+</vector>

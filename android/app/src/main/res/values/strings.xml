@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Between Sets</string>
+    <string name="widget_description">Rest timer with live countdown and one-tap presets</string>
+
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="plus15">+15s</string>
+    <string name="stop">Stop</string>
+    <string name="go_again">Go again</string>
+
+    <string name="channel_running">Running timer</string>
+    <string name="channel_done">Rest over</string>
+    <string name="notif_resting">Resting · %1$s</string>
+    <string name="notif_paused">Paused · %1$s left</string>
+    <string name="notif_set">Set %1$d</string>
+    <string name="notif_auto">Set %1$d · auto-repeat on</string>
+    <string name="done_title">Rest over · set %1$d done</string>
+    <string name="done_auto">Next %1$s rest has started</string>
+    <string name="done_manual">Tap Go again for the next rest</string>
+
+    <string name="w_ready">Ready · %1$d sets</string>
+    <string name="w_resting">Resting · %1$d sets</string>
+    <string name="w_auto">Auto · %1$d sets</string>
+    <string name="w_paused">Paused · %1$d sets</string>
+    <string name="w_done">Done · %1$d sets</string>
+
+    <string name="sc_30">30s rest</string>
+    <string name="sc_60">1:00 rest</string>
+    <string name="sc_90">1:30 rest</string>
+    <string name="sc_120">2:00 rest</string>
+    <string name="sc_180">3:00 rest</string>
+</resources>

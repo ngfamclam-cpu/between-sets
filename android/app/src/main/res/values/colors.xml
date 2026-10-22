@@ -1,0 +1,14 @@
+<resources>
+    <color name="bg">#FF111214</color>
+    <color name="widget_bg">#F0111214</color>
+    <color name="surface2">#FF26292F</color>
+    <color name="fg">#FFEEF0F2</color>
+    <color name="muted">#FF9097A1</color>
+    <color name="accent">#FFF2C230</color>
+    <color name="accent_ink">#FF1A1505</color>
+    <color name="plate10">#FF2F9E5B</color>
+    <color name="plate15">#FFF2C230</color>
+    <color name="plate20">#FF3A7BD5</color>
+    <color name="plate25">#FFD8423A</color>
+    <color name="plate5">#FFE9ECEF</color>
+</resources>

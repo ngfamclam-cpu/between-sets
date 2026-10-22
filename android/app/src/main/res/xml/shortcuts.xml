@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="rest30"
+        android:shortcutLongLabel="@string/sc_30"
+        android:shortcutShortLabel="@string/sc_30">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="betweensets://start/30"
+            android:targetClass="com.betweensets.app.MainActivity"
+            android:targetPackage="com.betweensets.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="rest60"
+        android:shortcutLongLabel="@string/sc_60"
+        android:shortcutShortLabel="@string/sc_60">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="betweensets://start/60"
+            android:targetClass="com.betweensets.app.MainActivity"
+            android:targetPackage="com.betweensets.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="rest90"
+        android:shortcutLongLabel="@string/sc_90"
+        android:shortcutShortLabel="@string/sc_90">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="betweensets://start/90"
+            android:targetClass="com.betweensets.app.MainActivity"
+            android:targetPackage="com.betweensets.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="rest120"
+        android:shortcutLongLabel="@string/sc_120"
+        android:shortcutShortLabel="@string/sc_120">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="betweensets://start/120"
+            android:targetClass="com.betweensets.app.MainActivity"
+            android:targetPackage="com.betweensets.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="rest180"
+        android:shortcutLongLabel="@string/sc_180"
+        android:shortcutShortLabel="@string/sc_180">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="betweensets://start/180"
+            android:targetClass="com.betweensets.app.MainActivity"
+            android:targetPackage="com.betweensets.app" />
+    </shortcut>
+</shortcuts>

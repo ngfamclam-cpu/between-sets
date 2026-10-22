@@ -1,0 +1,20 @@
+# Secrets: never commit
+*.p12
+*.jks
+*.keystore
+*.key
+*.pem
+.env
+secrets/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.kotlin/
+
+# Claude Code local state
+.claude/
