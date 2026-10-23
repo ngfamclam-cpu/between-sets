@@ -5,9 +5,8 @@ Last updated: 22 October 2026
 Between Sets is a rest timer. It does not collect, store or share any personal data.
 
 - No account, sign-in or analytics.
-- The Google Play version has no internet access: it does not request the internet permission.
-- The version downloaded from GitHub checks GitHub Releases about once an hour for a newer version
-  and downloads it. That request sends nothing about you; GitHub sees only your IP address, as with any download.
+- The app's only internet use: about once an hour it checks GitHub Releases for a newer version and
+  downloads it. That request sends nothing about you; GitHub sees only your IP address, as with any download.
 - Your timer settings, custom timers and set count stay on your phone, in the app's own storage.
   Uninstalling the app deletes them.
 

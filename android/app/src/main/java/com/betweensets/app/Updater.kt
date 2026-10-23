@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit
  * itself, Android 12+ lets later updates install with no prompt. Never installs during a rest.
  */
 object Updater {
-    const val ENABLED = true
     private const val REPO = "ngfamclam-cpu/between-sets"
     private const val CH_UPDATES = "updates"
     private const val ID_UPDATE = 3

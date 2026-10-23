@@ -1,5 +1,10 @@
 # Publishing Between Sets on Google Play
 
+> **Not set up yet.** The app currently updates itself from GitHub, which Play doesn't allow. Before
+> publishing, add a Play build without the updater (`Updater.kt`, `InstallReceiver.kt`, the `INTERNET` and
+> `REQUEST_INSTALL_PACKAGES` permissions), and have the GitHub workflow run `bundleRelease` to make the
+> `.aab`. The steps below assume that's done.
+
 ## What you need
 
 | Item | Notes |

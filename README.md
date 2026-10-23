@@ -31,11 +31,9 @@ newer build it downloads it and installs it, but never during a running rest.
 - After that (Android 12+), updates install with no prompt.
 - **Check for updates** at the bottom of the app checks right away.
 
-The Play Store build (`play` flavor) has no updater; the Play Store updates it.
-
 ## Play Store
 
-See [PLAY_STORE.md](PLAY_STORE.md). Each release also has a `-playstore.aab` file for upload.
+Not set up. Notes for later are in [PLAY_STORE.md](PLAY_STORE.md).
 
 ## iPhone
 

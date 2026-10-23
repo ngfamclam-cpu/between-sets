@@ -33,7 +33,7 @@ jobs:
 
       - name: Unit tests
         working-directory: android
-        run: gradle --no-daemon --stacktrace testGithubDebugUnitTest
+        run: gradle --no-daemon --stacktrace testDebugUnitTest
 
       - name: Upload test reports
         if: failure()
@@ -44,9 +44,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      # Self-updating APK (github flavor) to install directly, AAB without the updater (play flavor)
-      # to upload to the Play Store. Both signed with the same key.
-      - name: Build signed APK and Play Store bundle
+      - name: Build signed APK
         working-directory: android
         env:
           KEYSTORE_B64: ${{ secrets.BS_KEYSTORE_BASE64 }}
@@ -55,7 +53,7 @@ jobs:
         run: |
           printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/betweensets.p12"
           export BS_KEYSTORE="$RUNNER_TEMP/betweensets.p12"
-          gradle --no-daemon assembleGithubRelease bundlePlayRelease -PversionCode=${{ github.run_number }}
+          gradle --no-daemon assembleRelease -PversionCode=${{ github.run_number }}
           rm -f "$RUNNER_TEMP/betweensets.p12"
 
       - name: Publish release
@@ -63,10 +61,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           N=${{ github.run_number }}
-          cp android/app/build/outputs/apk/github/release/app-github-release.apk "BetweenSets-v$N.apk"
-          cp android/app/build/outputs/bundle/playRelease/app-play-release.aab "BetweenSets-v$N-playstore.aab"
-          # Same file under a fixed name, so releases/latest/download/BetweenSets.apk always gets the newest.
+          cp android/app/build/outputs/apk/release/app-release.apk "BetweenSets-v$N.apk"
+          # Same file under a fixed name: the app's updater and the install link both fetch this one.
           cp "BetweenSets-v$N.apk" BetweenSets.apk
-          gh release create "v$N" "BetweenSets-v$N.apk" BetweenSets.apk "BetweenSets-v$N-playstore.aab" \
+          gh release create "v$N" "BetweenSets-v$N.apk" BetweenSets.apk \
             --title "Between Sets v$N" \
-            --notes "Built from ${GITHUB_SHA::7}. On your phone: tap BetweenSets-v$N.apk below to download, then open it to install (it updates over the old version). The .aab file is for uploading to the Play Store."
+            --notes "Built from ${GITHUB_SHA::7}. The app installs this update by itself. To install by hand: tap BetweenSets.apk below on your phone, then open it (it updates over the old version)."

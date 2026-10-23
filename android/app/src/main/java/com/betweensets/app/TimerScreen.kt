@@ -233,7 +233,7 @@ fun TimerScreen() {
                     )
                 }
 
-                if (Updater.ENABLED) UpdateFooter(update) { Updater.checkNow(ctx, force = true) }
+                UpdateFooter(update) { Updater.checkNow(ctx, force = true) }
             }
         }
 
