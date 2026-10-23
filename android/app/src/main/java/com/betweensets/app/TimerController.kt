@@ -44,6 +44,16 @@ object TimerController {
     fun setAuto(ctx: Context, on: Boolean) = apply(ctx, current(ctx).copy(auto = on))
     fun clearSets(ctx: Context) = apply(ctx, current(ctx).copy(sets = 0))
 
+    fun setNotifControls(ctx: Context, on: Boolean) {
+        TimerStore.setNotifControls(ctx, on)
+        Notifs.showOngoing(ctx, current(ctx))
+    }
+
+    fun setLockScreenControls(ctx: Context, on: Boolean) {
+        TimerStore.setLockScreenControls(ctx, on)
+        Notifs.showOngoing(ctx, current(ctx))
+    }
+
     /** The alarm fired. Returns true when a rest really ended and the chime should play. */
     fun onAlarm(ctx: Context): Boolean {
         val next = TimerLogic.finish(current(ctx), now()) ?: return false

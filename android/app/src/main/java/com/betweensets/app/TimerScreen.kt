@@ -90,6 +90,8 @@ fun TimerScreen() {
         var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
         var customs by remember { mutableStateOf(TimerStore.customs(ctx)) }
         var adding by remember { mutableStateOf(false) }
+        var notifControls by remember { mutableStateOf(TimerStore.notifControls(ctx)) }
+        var lockControls by remember { mutableStateOf(TimerStore.lockScreenControls(ctx)) }
 
         LaunchedEffect(Unit) {
             while (true) {
@@ -172,28 +174,13 @@ fun TimerScreen() {
                     ) { Text("+15s", color = Fg, fontSize = 16.sp) }
                 }
 
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Surface, RoundedCornerShape(14.dp))
-                        .border(1.dp, Line, RoundedCornerShape(14.dp))
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Auto-start next rest", color = Fg, fontSize = 16.sp)
-                        Text(
-                            if (s.auto) "On: the next rest starts as soon as the chime plays"
-                            else "Off: tap Go again after each chime",
-                            color = Muted, fontSize = 13.sp,
-                        )
-                    }
-                    Switch(
-                        checked = s.auto,
-                        onCheckedChange = { TimerController.setAuto(ctx, it) },
-                        colors = SwitchDefaults.colors(checkedTrackColor = Accent, checkedThumbColor = AccentInk),
-                    )
-                }
+                SettingRow(
+                    title = "Auto-start next rest",
+                    detail = if (s.auto) "On: the next rest starts as soon as the chime plays"
+                    else "Off: tap Go again after each chime",
+                    checked = s.auto,
+                    onChange = { TimerController.setAuto(ctx, it) },
+                )
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Label("Rest interval · tap to start")
@@ -223,6 +210,34 @@ fun TimerScreen() {
                     }
                 }
 
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Label("Settings")
+                    SettingRow(
+                        title = "Buttons in notifications",
+                        detail = if (notifControls) "Presets, Pause, +15s and Stop in your notification shade"
+                        else "Off: only the rest-over alert shows",
+                        checked = notifControls,
+                        onChange = {
+                            notifControls = it
+                            TimerController.setNotifControls(ctx, it)
+                        },
+                    )
+                    SettingRow(
+                        title = "Buttons on lock screen",
+                        detail = when {
+                            !notifControls -> "Turn on buttons in notifications first"
+                            lockControls -> "Use them without unlocking your phone"
+                            else -> "Off: unlock to see them in the notification shade"
+                        },
+                        checked = lockControls && notifControls,
+                        enabled = notifControls,
+                        onChange = {
+                            lockControls = it
+                            TimerController.setLockScreenControls(ctx, it)
+                        },
+                    )
+                }
+
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Label("Home screen")
                     Text(
@@ -250,6 +265,35 @@ fun TimerScreen() {
                 },
             )
         }
+    }
+}
+
+@Composable
+private fun SettingRow(
+    title: String,
+    detail: String,
+    checked: Boolean,
+    onChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(Surface, RoundedCornerShape(14.dp))
+            .border(1.dp, Line, RoundedCornerShape(14.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = if (enabled) Fg else Muted, fontSize = 16.sp)
+            Text(detail, color = Muted, fontSize = 13.sp)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onChange,
+            enabled = enabled,
+            colors = SwitchDefaults.colors(checkedTrackColor = Accent, checkedThumbColor = AccentInk),
+        )
     }
 }
 

@@ -52,6 +52,10 @@ object Notifs {
      */
     @SuppressLint("MissingPermission")
     fun showOngoing(ctx: Context, s: TimerState) {
+        if (!TimerStore.notifControls(ctx)) {
+            nm(ctx).cancel(ID_RUNNING)
+            return
+        }
         createChannels(ctx)
         val now = System.currentTimeMillis()
         val small = RemoteViews(ctx.packageName, R.layout.notif_small)
@@ -70,7 +74,11 @@ object Notifs {
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setCategory(Notification.CATEGORY_STOPWATCH)
-            .setVisibility(Notification.VISIBILITY_PUBLIC)
+            // SECRET keeps it off the lock screen but still in the notification shade.
+            .setVisibility(
+                if (TimerStore.lockScreenControls(ctx)) Notification.VISIBILITY_PUBLIC
+                else Notification.VISIBILITY_SECRET
+            )
             .setContentIntent(TimerController.openAppIntent(ctx))
             // Android 14+ lets you swipe ongoing notifications away; put the controls straight back.
             .setDeleteIntent(TimerReceiver.pendingIntent(ctx, TimerReceiver.REFRESH))

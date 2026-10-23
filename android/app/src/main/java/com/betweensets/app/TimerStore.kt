@@ -28,6 +28,18 @@ object TimerStore {
             .commit()
     }
 
+    /** Settings: the control panel in the notification shade, and whether it also shows on the lock screen. */
+    fun notifControls(ctx: Context) = prefs(ctx).getBoolean("notifControls", true)
+    fun lockScreenControls(ctx: Context) = prefs(ctx).getBoolean("lockControls", true)
+
+    fun setNotifControls(ctx: Context, on: Boolean) {
+        prefs(ctx).edit().putBoolean("notifControls", on).commit()
+    }
+
+    fun setLockScreenControls(ctx: Context, on: Boolean) {
+        prefs(ctx).edit().putBoolean("lockControls", on).commit()
+    }
+
     /** Custom timers the user saved, in seconds. */
     fun customs(ctx: Context): List<Int> =
         (prefs(ctx).getString("customs", "") ?: "").split(',').mapNotNull { it.toIntOrNull() }
