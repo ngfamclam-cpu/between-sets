@@ -19,6 +19,10 @@
     <string name="done_auto">Next %1$s rest has started</string>
     <string name="done_manual">Tap Go again for the next rest</string>
 
+    <string name="channel_updates">App updates</string>
+    <string name="update_ready">Version %1$d is ready. Tap to install.</string>
+    <string name="update_confirm">Tap to finish installing the update</string>
+
     <string name="w_ready">Ready · %1$d sets</string>
     <string name="w_resting">Resting · %1$d sets</string>
     <string name="w_auto">Auto · %1$d sets</string>

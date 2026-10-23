@@ -26,11 +26,18 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent { TimerScreen() }
+        Updater.start(this)
     }
 
     override fun onResume() {
         super.onResume()
         TimerController.current(this)
+        Updater.checkNow(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Updater.installIfSilent(this)
     }
 
     override fun onNewIntent(intent: Intent) {

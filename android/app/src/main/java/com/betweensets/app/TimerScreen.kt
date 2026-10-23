@@ -86,6 +86,7 @@ fun TimerScreen() {
     MaterialTheme(colorScheme = darkColorScheme(primary = Accent, onPrimary = AccentInk, background = Bg, surface = Surface)) {
         val ctx = LocalContext.current
         val s by TimerController.state.collectAsState()
+        val update by Updater.state.collectAsState()
         var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
         var customs by remember { mutableStateOf(TimerStore.customs(ctx)) }
         var adding by remember { mutableStateOf(false) }
@@ -123,6 +124,8 @@ fun TimerScreen() {
                         Text("clear", color = Muted, fontSize = 13.sp)
                     }
                 }
+
+                (update as? UpdateState.Ready)?.let { UpdateBanner(it) { Updater.installNow(ctx) } }
 
                 Ring(
                     fraction = if (s.durationMs > 0) left.toFloat() / s.durationMs else 0f,
@@ -229,6 +232,8 @@ fun TimerScreen() {
                         color = Muted, fontSize = 14.sp, lineHeight = 20.sp,
                     )
                 }
+
+                if (Updater.ENABLED) UpdateFooter(update) { Updater.checkNow(ctx, force = true) }
             }
         }
 
@@ -245,6 +250,56 @@ fun TimerScreen() {
                 },
             )
         }
+    }
+}
+
+@Composable
+private fun UpdateBanner(ready: UpdateState.Ready, onInstall: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(Surface, RoundedCornerShape(14.dp))
+            .border(1.dp, Accent, RoundedCornerShape(14.dp))
+            .padding(start = 14.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text("Update ready · version ${ready.version}", color = Fg, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                if (ready.needsPermission) "Allow Between Sets to install apps, once, so it can update itself"
+                else "Installs when you close the app, or tap Install now",
+                color = Muted, fontSize = 13.sp,
+            )
+        }
+        Button(
+            onClick = onInstall,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Accent, contentColor = AccentInk),
+        ) { Text(if (ready.needsPermission) "Allow" else "Install") }
+    }
+}
+
+@Composable
+private fun UpdateFooter(update: UpdateState, onCheck: () -> Unit) {
+    val ctx = LocalContext.current
+    val version = remember {
+        runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
+    }
+    val status = when (update) {
+        UpdateState.Idle -> ""
+        UpdateState.Checking -> "Checking for updates…"
+        UpdateState.UpToDate -> "Up to date"
+        is UpdateState.Downloading -> "Downloading version ${update.version} · ${update.percent}%"
+        is UpdateState.Ready -> "Version ${update.version} ready to install"
+        is UpdateState.Installing -> "Installing version ${update.version}…"
+        is UpdateState.Failed -> update.reason
+    }
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text("Version $version", color = Muted, fontSize = 13.sp)
+            if (status.isNotEmpty()) Text(status, color = Muted, fontSize = 12.sp)
+        }
+        TextButton(onClick = onCheck) { Text("Check for updates", color = Accent, fontSize = 13.sp) }
     }
 }
 

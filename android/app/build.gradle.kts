@@ -20,6 +20,19 @@ android {
         versionName = "1.0.$appVersionCode"
     }
 
+    // github: the APK from GitHub Releases, which updates itself. play: the Play Store build, which
+    // can't (Play forbids self-updating apps), so it has no updater, internet or install permission.
+    flavorDimensions += "store"
+    productFlavors {
+        create("github") {
+            dimension = "store"
+            isDefault = true
+        }
+        create("play") {
+            dimension = "store"
+        }
+    }
+
     signingConfigs {
         create("release") {
             if (releaseKeystore != null) {
@@ -62,6 +75,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.kotlinx.coroutines.android)
+    "githubImplementation"(libs.androidx.work)
 
     testImplementation(libs.junit)
 }

@@ -22,6 +22,17 @@ Every push to `main` builds a signed APK on GitHub and posts it under
 
 New versions install over the old one and keep your settings.
 
+### Auto-update
+
+The GitHub APK checks Releases when it opens and about once an hour in the background. When there's a
+newer build it downloads it and installs it, but never during a running rest.
+
+- The first time, Android asks you to allow Between Sets to install apps, and to confirm the update.
+- After that (Android 12+), updates install with no prompt.
+- **Check for updates** at the bottom of the app checks right away.
+
+The Play Store build (`play` flavor) has no updater; the Play Store updates it.
+
 ## Play Store
 
 See [PLAY_STORE.md](PLAY_STORE.md). Each release also has a `-playstore.aab` file for upload.
