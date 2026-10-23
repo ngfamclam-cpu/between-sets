@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Expanded notification: same ids as the widget, filled by TimerViews -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/time_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <Chronometer
+                android:id="@+id/chrono"
+                style="@style/NotifTime" />
+
+            <TextView
+                android:id="@+id/time"
+                style="@style/NotifTime" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_controls"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_toggle"
+            style="@style/WidgetButton"
+            android:layout_weight="1.6"
+            android:background="@drawable/btn_accent"
+            android:text="@string/start"
+            android:textColor="@color/accent_ink" />
+
+        <TextView
+            android:id="@+id/btn_plus"
+            style="@style/WidgetButton"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/btn_dark"
+            android:text="@string/plus15" />
+
+        <TextView
+            android:id="@+id/btn_stop"
+            style="@style/WidgetButton"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/btn_dark"
+            android:text="@string/stop" />
+    </LinearLayout>
+
+    <include layout="@layout/notif_presets" />
+</LinearLayout>

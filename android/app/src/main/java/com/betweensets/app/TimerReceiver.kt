@@ -19,6 +19,7 @@ class TimerReceiver : BroadcastReceiver() {
             TOGGLE -> TimerController.toggle(ctx)
             PLUS -> TimerController.plus(ctx)
             STOP -> TimerController.stop(ctx)
+            REFRESH -> Notifs.showOngoing(ctx, TimerController.current(ctx))
         }
     }
 
@@ -28,6 +29,7 @@ class TimerReceiver : BroadcastReceiver() {
         const val TOGGLE = "com.betweensets.app.TOGGLE"
         const val PLUS = "com.betweensets.app.PLUS"
         const val STOP = "com.betweensets.app.STOP"
+        const val REFRESH = "com.betweensets.app.REFRESH"
         const val EXTRA_SECONDS = "seconds"
 
         fun pendingIntent(ctx: Context, action: String, seconds: Int = 0): PendingIntent =

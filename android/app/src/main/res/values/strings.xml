@@ -9,7 +9,8 @@
     <string name="stop">Stop</string>
     <string name="go_again">Go again</string>
 
-    <string name="channel_running">Running timer</string>
+    <string name="channel_controls">Timer controls</string>
+    <string name="notif_idle">Between Sets · ready</string>
     <string name="channel_done">Rest over</string>
     <string name="notif_resting">Resting · %1$s</string>
     <string name="notif_paused">Paused · %1$s left</string>

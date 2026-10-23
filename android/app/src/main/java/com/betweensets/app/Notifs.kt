@@ -6,9 +6,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.drawable.Icon
+import android.widget.RemoteViews
 
 object Notifs {
-    private const val CH_RUNNING = "running"
+    // Default importance (no sound): phones hide "silent" notifications from the lock screen.
+    private const val CH_CONTROLS = "controls"
+    private const val CH_OLD_RUNNING = "running"
     private const val CH_DONE = "rest_over"
     private const val ID_RUNNING = 1
     private const val ID_DONE = 2
@@ -16,8 +19,11 @@ object Notifs {
     private fun nm(ctx: Context) = ctx.getSystemService(NotificationManager::class.java)
 
     fun createChannels(ctx: Context) {
+        nm(ctx).deleteNotificationChannel(CH_OLD_RUNNING)
         nm(ctx).createNotificationChannel(
-            NotificationChannel(CH_RUNNING, ctx.getString(R.string.channel_running), NotificationManager.IMPORTANCE_LOW).apply {
+            NotificationChannel(CH_CONTROLS, ctx.getString(R.string.channel_controls), NotificationManager.IMPORTANCE_DEFAULT).apply {
+                setSound(null, null)
+                enableVibration(false)
                 setShowBadge(false)
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
@@ -39,41 +45,43 @@ object Notifs {
         TimerReceiver.pendingIntent(ctx, action),
     ).build()
 
-    /** The lock-screen notification: live countdown plus Pause, +15s and Stop. */
+    /**
+     * The always-there control panel in the notification shade and on the lock screen. Collapsed it
+     * shows the presets (idle) or countdown + Pause/+15s/Stop (timing); expanded it shows all of them.
+     * The buttons are broadcasts, so they work without unlocking.
+     */
     @SuppressLint("MissingPermission")
     fun showOngoing(ctx: Context, s: TimerState) {
-        if (s.status == Status.IDLE || s.status == Status.DONE) {
-            nm(ctx).cancel(ID_RUNNING)
-            return
-        }
         createChannels(ctx)
         val now = System.currentTimeMillis()
-        val running = s.status == Status.RUNNING
-        val b = Notification.Builder(ctx, CH_RUNNING)
+        val small = RemoteViews(ctx.packageName, R.layout.notif_small)
+        val big = RemoteViews(ctx.packageName, R.layout.notif_big)
+        TimerViews.fill(ctx, small, s, compact = true)
+        TimerViews.fill(ctx, big, s, compact = false)
+        val title = when (s.status) {
+            Status.RUNNING -> ctx.getString(R.string.notif_resting, formatClock(s.durationMs))
+            Status.PAUSED -> ctx.getString(R.string.notif_paused, formatClock(s.leftMs(now)))
+            Status.IDLE, Status.DONE -> ctx.getString(R.string.notif_idle)
+        }
+        val b = Notification.Builder(ctx, CH_CONTROLS)
             .setSmallIcon(R.drawable.ic_stat_timer)
             .setColor(ctx.getColor(R.color.accent))
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setCategory(Notification.CATEGORY_ALARM)
+            .setShowWhen(false)
+            .setCategory(Notification.CATEGORY_STOPWATCH)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setContentIntent(TimerController.openAppIntent(ctx))
+            // Android 14+ lets you swipe ongoing notifications away; put the controls straight back.
+            .setDeleteIntent(TimerReceiver.pendingIntent(ctx, TimerReceiver.REFRESH))
+            .setContentTitle(title)
             .setContentText(
                 if (s.auto) ctx.getString(R.string.notif_auto, s.sets + 1)
                 else ctx.getString(R.string.notif_set, s.sets + 1)
             )
-            .addAction(action(ctx, if (running) R.string.pause else R.string.resume, TimerReceiver.TOGGLE))
-            .addAction(action(ctx, R.string.plus15, TimerReceiver.PLUS))
-            .addAction(action(ctx, R.string.stop, TimerReceiver.STOP))
-        if (running) {
-            b.setContentTitle(ctx.getString(R.string.notif_resting, formatClock(s.durationMs)))
-                .setUsesChronometer(true)
-                .setChronometerCountDown(true)
-                .setWhen(s.endAt)
-                .setShowWhen(true)
-        } else {
-            b.setContentTitle(ctx.getString(R.string.notif_paused, formatClock(s.leftMs(now))))
-                .setShowWhen(false)
-        }
+            .setStyle(Notification.DecoratedCustomViewStyle())
+            .setCustomContentView(small)
+            .setCustomBigContentView(big)
         nm(ctx).notify(ID_RUNNING, b.build())
     }
 
