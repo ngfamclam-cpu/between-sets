@@ -14,7 +14,8 @@ the rest is over, even with the phone locked. Turn on auto-repeat and the next r
 Every push to `main` builds a signed APK on GitHub and posts it under
 [Releases](https://github.com/ngfamclam-cpu/between-sets/releases/latest).
 
-1. On the phone, open the latest release and tap `BetweenSets-vN.apk`.
+1. On the phone, open https://github.com/ngfamclam-cpu/between-sets/releases/latest/download/BetweenSets.apk
+   (always the newest build).
 2. Open the download. If Android asks, allow your browser to install unknown apps.
 3. Open Between Sets and allow notifications (needed for the lock-screen controls).
 4. Add the widget: long-press the home screen → Widgets → Between Sets.
