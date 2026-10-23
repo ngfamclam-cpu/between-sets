@@ -1,5 +1,12 @@
 package com.betweensets.app
 
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -93,6 +100,13 @@ fun TimerScreen() {
         var notifMode by remember { mutableStateOf(TimerStore.notifMode(ctx)) }
         val notifControls = notifMode != NotifMode.OFF
         var lockControls by remember { mutableStateOf(TimerStore.lockScreenControls(ctx)) }
+        var sound by remember { mutableStateOf(TimerStore.sound(ctx)) }
+        var choosingSound by remember { mutableStateOf(false) }
+        val pickSound: (SoundChoice) -> Unit = {
+            sound = it
+            TimerStore.setSound(ctx, it)
+            Chime.preview(ctx, it)
+        }
 
         LaunchedEffect(Unit) {
             while (true) {
@@ -213,6 +227,21 @@ fun TimerScreen() {
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Label("Settings")
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Surface, RoundedCornerShape(14.dp))
+                            .border(1.dp, Line, RoundedCornerShape(14.dp))
+                            .clickable { choosingSound = true }
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text("Rest-over sound", color = Fg, fontSize = 16.sp)
+                            Text(sound.label, color = Muted, fontSize = 13.sp)
+                        }
+                        Text("Change", color = Accent, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    }
                     ChoiceRow(
                         title = "Buttons in notifications",
                         detail = when (notifMode) {
@@ -261,6 +290,17 @@ fun TimerScreen() {
             }
         }
 
+        if (choosingSound) {
+            SoundDialog(
+                current = sound,
+                onPick = pickSound,
+                onDismiss = {
+                    choosingSound = false
+                    Chime.stopPreview()
+                },
+            )
+        }
+
         if (adding) {
             NewTimerDialog(
                 onDismiss = { adding = false },
@@ -303,6 +343,84 @@ private fun SettingRow(
             enabled = enabled,
             colors = SwitchDefaults.colors(checkedTrackColor = Accent, checkedThumbColor = AccentInk),
         )
+    }
+}
+
+/** Built-in sounds, any alarm or ringtone on the phone, or an audio file. Tapping one plays it. */
+@Composable
+private fun SoundDialog(current: SoundChoice, onPick: (SoundChoice) -> Unit, onDismiss: () -> Unit) {
+    val ctx = LocalContext.current
+    val phoneSound = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val uri: Uri? = if (Build.VERSION.SDK_INT >= 33) {
+            result.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION") result.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+        }
+        if (uri != null) {
+            val title = runCatching { RingtoneManager.getRingtone(ctx, uri).getTitle(ctx) }.getOrNull() ?: "Phone sound"
+            onPick(SoundChoice.of(uri, title))
+        }
+    }
+    val file = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            // Keep access after a restart, so the alarm can still read it.
+            runCatching { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            val name = runCatching {
+                ctx.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
+                    if (it.moveToFirst()) it.getString(0) else null
+                }
+            }.getOrNull() ?: "Your sound"
+            onPick(SoundChoice.of(uri, name))
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rest-over sound") },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                BUILT_IN_SOUNDS.forEach { s ->
+                    val choice = SoundChoice.of(s)
+                    SoundOption(s.label, selected = current.key == choice.key) { onPick(choice) }
+                }
+                if (current.uri != null) SoundOption(current.label, selected = true) { onPick(current) }
+                TextButton(onClick = {
+                    Chime.stopPreview()
+                    phoneSound.launch(
+                        Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                            .putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
+                            .putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
+                            .putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Rest-over sound")
+                    )
+                }) { Text("Phone sounds…") }
+                TextButton(onClick = {
+                    Chime.stopPreview()
+                    file.launch(arrayOf("audio/*"))
+                }) { Text("Your own file…") }
+                Text("Sounds play at alarm volume, up to 7 seconds.", color = Muted, fontSize = 12.sp)
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
+    )
+}
+
+@Composable
+private fun SoundOption(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .background(if (selected) Accent else Surface2, RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            label, color = if (selected) AccentInk else Fg, fontSize = 15.sp,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            modifier = Modifier.weight(1f), maxLines = 1,
+        )
+        Text("▶", color = if (selected) AccentInk else Muted, fontSize = 13.sp)
     }
 }
 

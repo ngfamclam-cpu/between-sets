@@ -10,6 +10,8 @@ the rest is over, even with the phone locked. Turn on auto-repeat and the next r
   swipe it out of recent apps), *Always*, or *Off*. A separate switch keeps it off the lock screen.
 - **App icon shortcuts:** long-press the icon for one-tap 30s to 3:00 rests.
 - **Chime:** plays at alarm volume, on an alarm-clock alarm, so Android's battery saver doesn't delay it.
+  Settings → Rest-over sound: six built-in sounds (bell, boxing bell, triple beep, rising tones, whistle,
+  gong), any phone alarm or ringtone, or your own audio file. Long sounds stop after 7 seconds.
 - **Set counter:** goes up each time a rest finishes.
 
 ## Install on your phone

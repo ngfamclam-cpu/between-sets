@@ -54,6 +54,15 @@ object TimerStore {
         prefs(ctx).edit().putBoolean("lockControls", on).commit()
     }
 
+    fun sound(ctx: Context): SoundChoice = prefs(ctx).run {
+        val key = getString("soundKey", null) ?: return SoundChoice.DEFAULT
+        SoundChoice(key, getString("soundLabel", null) ?: "Custom sound")
+    }
+
+    fun setSound(ctx: Context, choice: SoundChoice) {
+        prefs(ctx).edit().putString("soundKey", choice.key).putString("soundLabel", choice.label).commit()
+    }
+
     /** Custom timers the user saved, in seconds. */
     fun customs(ctx: Context): List<Int> =
         (prefs(ctx).getString("customs", "") ?: "").split(',').mapNotNull { it.toIntOrNull() }
