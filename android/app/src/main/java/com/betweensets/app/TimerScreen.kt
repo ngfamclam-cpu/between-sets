@@ -90,7 +90,8 @@ fun TimerScreen() {
         var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
         var customs by remember { mutableStateOf(TimerStore.customs(ctx)) }
         var adding by remember { mutableStateOf(false) }
-        var notifControls by remember { mutableStateOf(TimerStore.notifControls(ctx)) }
+        var notifMode by remember { mutableStateOf(TimerStore.notifMode(ctx)) }
+        val notifControls = notifMode != NotifMode.OFF
         var lockControls by remember { mutableStateOf(TimerStore.lockScreenControls(ctx)) }
 
         LaunchedEffect(Unit) {
@@ -212,14 +213,22 @@ fun TimerScreen() {
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Label("Settings")
-                    SettingRow(
+                    ChoiceRow(
                         title = "Buttons in notifications",
-                        detail = if (notifControls) "Presets, Pause, +15s and Stop in your notification shade"
-                        else "Off: only the rest-over alert shows",
-                        checked = notifControls,
-                        onChange = {
-                            notifControls = it
-                            TimerController.setNotifControls(ctx, it)
+                        detail = when (notifMode) {
+                            NotifMode.APP_OPEN -> "Show when you open the app; gone when you swipe it out of recent apps"
+                            NotifMode.ALWAYS -> "Always in your notification shade, even after closing the app"
+                            NotifMode.OFF -> "Off: only the rest-over alert shows"
+                        },
+                        options = listOf(
+                            NotifMode.APP_OPEN to "While open",
+                            NotifMode.ALWAYS to "Always",
+                            NotifMode.OFF to "Off",
+                        ),
+                        selected = notifMode,
+                        onSelect = {
+                            notifMode = it
+                            TimerController.setNotifMode(ctx, it)
                         },
                     )
                     SettingRow(
@@ -294,6 +303,47 @@ private fun SettingRow(
             enabled = enabled,
             colors = SwitchDefaults.colors(checkedTrackColor = Accent, checkedThumbColor = AccentInk),
         )
+    }
+}
+
+@Composable
+private fun <T> ChoiceRow(
+    title: String,
+    detail: String,
+    options: List<Pair<T, String>>,
+    selected: T,
+    onSelect: (T) -> Unit,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(Surface, RoundedCornerShape(14.dp))
+            .border(1.dp, Line, RoundedCornerShape(14.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Column {
+            Text(title, color = Fg, fontSize = 16.sp)
+            Text(detail, color = Muted, fontSize = 13.sp)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            options.forEach { (value, label) ->
+                val on = value == selected
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .height(38.dp)
+                        .background(if (on) Accent else Surface2, RoundedCornerShape(10.dp))
+                        .clickable { onSelect(value) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        label, color = if (on) AccentInk else Fg, fontSize = 14.sp,
+                        fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
+                    )
+                }
+            }
+        }
     }
 }
 

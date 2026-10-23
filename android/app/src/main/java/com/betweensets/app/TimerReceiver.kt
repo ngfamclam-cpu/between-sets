@@ -45,6 +45,8 @@ class TimerReceiver : BroadcastReceiver() {
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            // The app isn't open after a restart or update until you open it again.
+            TimerStore.setAppOpen(ctx, false)
             TimerController.restore(ctx)
         }
     }

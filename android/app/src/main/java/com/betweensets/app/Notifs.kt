@@ -13,7 +13,8 @@ object Notifs {
     private const val CH_CONTROLS = "controls"
     private const val CH_OLD_RUNNING = "running"
     private const val CH_DONE = "rest_over"
-    private const val ID_RUNNING = 1
+    /** Also the id of ControlsService's foreground notification, so updates land on the same one. */
+    const val ID_CONTROLS = 1
     private const val ID_DONE = 2
 
     private fun nm(ctx: Context) = ctx.getSystemService(NotificationManager::class.java)
@@ -52,10 +53,15 @@ object Notifs {
      */
     @SuppressLint("MissingPermission")
     fun showOngoing(ctx: Context, s: TimerState) {
-        if (!TimerStore.notifControls(ctx)) {
-            nm(ctx).cancel(ID_RUNNING)
-            return
+        val show = when (TimerStore.notifMode(ctx)) {
+            NotifMode.OFF -> false
+            NotifMode.ALWAYS -> true
+            NotifMode.APP_OPEN -> TimerStore.appOpen(ctx)
         }
+        if (show) nm(ctx).notify(ID_CONTROLS, buildControls(ctx, s)) else nm(ctx).cancel(ID_CONTROLS)
+    }
+
+    fun buildControls(ctx: Context, s: TimerState): Notification {
         createChannels(ctx)
         val now = System.currentTimeMillis()
         val small = RemoteViews(ctx.packageName, R.layout.notif_small)
@@ -90,7 +96,7 @@ object Notifs {
             .setStyle(Notification.DecoratedCustomViewStyle())
             .setCustomContentView(small)
             .setCustomBigContentView(big)
-        nm(ctx).notify(ID_RUNNING, b.build())
+        return b.build()
     }
 
     @SuppressLint("MissingPermission")

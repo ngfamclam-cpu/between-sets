@@ -44,8 +44,14 @@ object TimerController {
     fun setAuto(ctx: Context, on: Boolean) = apply(ctx, current(ctx).copy(auto = on))
     fun clearSets(ctx: Context) = apply(ctx, current(ctx).copy(sets = 0))
 
-    fun setNotifControls(ctx: Context, on: Boolean) {
-        TimerStore.setNotifControls(ctx, on)
+    /** Called from the app's Settings, so the app is on screen and may start the service. */
+    fun setNotifMode(ctx: Context, mode: NotifMode) {
+        TimerStore.setNotifMode(ctx, mode)
+        when (mode) {
+            NotifMode.APP_OPEN -> ControlsService.start(ctx)
+            NotifMode.ALWAYS -> ControlsService.detach(ctx)
+            NotifMode.OFF -> ControlsService.stop(ctx)
+        }
         Notifs.showOngoing(ctx, current(ctx))
     }
 

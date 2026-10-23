@@ -2,6 +2,8 @@ package com.betweensets.app
 
 import android.content.Context
 
+enum class NotifMode { APP_OPEN, ALWAYS, OFF }
+
 object TimerStore {
     private fun prefs(ctx: Context) = ctx.getSharedPreferences("timer", Context.MODE_PRIVATE)
 
@@ -28,12 +30,24 @@ object TimerStore {
             .commit()
     }
 
-    /** Settings: the control panel in the notification shade, and whether it also shows on the lock screen. */
-    fun notifControls(ctx: Context) = prefs(ctx).getBoolean("notifControls", true)
+    /** Settings: when the control panel shows in the notification shade, and whether also on the lock screen. */
+    fun notifMode(ctx: Context): NotifMode = prefs(ctx).run {
+        getString("notifMode", null)?.let { runCatching { NotifMode.valueOf(it) }.getOrNull() }
+            // Before this setting existed there was only an on/off switch.
+            ?: if (contains("notifControls") && !getBoolean("notifControls", true)) NotifMode.OFF else NotifMode.APP_OPEN
+    }
+
+    fun setNotifMode(ctx: Context, mode: NotifMode) {
+        prefs(ctx).edit().putString("notifMode", mode.name).commit()
+    }
+
     fun lockScreenControls(ctx: Context) = prefs(ctx).getBoolean("lockControls", true)
 
-    fun setNotifControls(ctx: Context, on: Boolean) {
-        prefs(ctx).edit().putBoolean("notifControls", on).commit()
+    /** True from opening the app until it's swiped out of recent apps (see ControlsService). */
+    fun appOpen(ctx: Context) = prefs(ctx).getBoolean("appOpen", false)
+
+    fun setAppOpen(ctx: Context, open: Boolean) {
+        prefs(ctx).edit().putBoolean("appOpen", open).commit()
     }
 
     fun setLockScreenControls(ctx: Context, on: Boolean) {

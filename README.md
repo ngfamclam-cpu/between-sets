@@ -4,9 +4,10 @@ A gym rest timer for Android. Pick 30s, 1:00, 1:30, 2:00 or 3:00 (or save your o
 the rest is over, even with the phone locked. Turn on auto-repeat and the next rest starts by itself.
 
 - **Home screen widget:** live countdown, Pause/Resume, +15s, Stop, and the five presets.
-- **Notification shade and lock screen:** a control panel that's always there. Collapsed it shows the
-  five presets (or the countdown with Pause/+15s/Stop while timing); expand it for everything. The buttons
-  work without unlocking. Swipe it away and it comes back.
+- **Notification shade and lock screen:** a control panel. Collapsed it shows the five presets (or the
+  countdown with Pause/+15s/Stop while timing); expand it for everything. The buttons work without
+  unlocking. Settings → Buttons in notifications: *While open* (default: from opening the app until you
+  swipe it out of recent apps), *Always*, or *Off*. A separate switch keeps it off the lock screen.
 - **App icon shortcuts:** long-press the icon for one-tap 30s to 3:00 rests.
 - **Chime:** plays at alarm volume, on an alarm-clock alarm, so Android's battery saver doesn't delay it.
 - **Set counter:** goes up each time a rest finishes.

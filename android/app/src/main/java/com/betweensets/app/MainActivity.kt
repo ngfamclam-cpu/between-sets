@@ -32,6 +32,11 @@ class MainActivity : ComponentActivity() {
         Updater.start(this)
     }
 
+    override fun onStart() {
+        super.onStart()
+        ControlsService.start(this)
+    }
+
     override fun onResume() {
         super.onResume()
         TimerController.current(this)
